@@ -5,863 +5,561 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Central City Crime Watch | S.T.A.R. Labs</title>
-
-<!-- LOGIN CHECK: ALWAYS REQUIRE A FRESH LOGIN -->
-<script>
-(function () {
-  const approved = sessionStorage.getItem("loginApproved");
-  const username = sessionStorage.getItem("starUser");
-  const role = sessionStorage.getItem("starRole");
-
-  if (approved !== "yes" || !username || !role) {
-    sessionStorage.removeItem("starUser");
-    sessionStorage.removeItem("starRole");
-    sessionStorage.removeItem("loginApproved");
-    window.location.replace("login.html");
-    return;
-  }
-
-  sessionStorage.removeItem("loginApproved");
-})();
-</script>
-
 <style>
-:root {
-  --bg:#07111d;
-  --panel:#101f30;
-  --panel2:#15283b;
-  --border:#29435b;
-  --text:#eaf4ff;
-  --muted:#91a9bf;
-  --blue:#39a9e8;
-  --green:#4bd6a0;
-  --red:#ff6969;
-  --yellow:#ffc65c;
+:root{
+  --bg:#07111d;--panel:#101f30;--panel2:#15283b;
+  --border:#29435b;--text:#eaf4ff;--muted:#91a9bf;
+  --blue:#39a9e8;--green:#4bd6a0;--red:#ff6969;
+  --yellow:#ffc65c;--purple:#bd91ff;
 }
 *{box-sizing:border-box}
-body{
-  margin:0;background:var(--bg);color:var(--text);
-  font-family:Arial,sans-serif;
-}
+body{margin:0;background:var(--bg);color:var(--text);font-family:Arial,sans-serif}
 button,input,select{font:inherit}
 button{cursor:pointer}
 header{
-  min-height:76px;padding:16px 24px;
-  display:flex;align-items:center;justify-content:space-between;
-  gap:15px;flex-wrap:wrap;background:#0c1a29;
-  border-bottom:1px solid var(--border);
+  min-height:76px;padding:16px 24px;display:flex;align-items:center;
+  justify-content:space-between;gap:15px;flex-wrap:wrap;
+  background:#0c1a29;border-bottom:1px solid var(--border)
 }
 .brand{display:flex;align-items:center;gap:12px}
 .logo{
-  width:43px;height:43px;border-radius:12px;
-  display:grid;place-items:center;background:#173c59;
-  color:#65c9ff;font-size:23px;font-weight:bold;
+  width:43px;height:43px;border-radius:12px;display:grid;
+  place-items:center;background:#173c59;color:#65c9ff;
+  font-size:23px;font-weight:bold
 }
 .brand h1{font-size:18px;margin:0}
 .brand p{font-size:11px;color:var(--muted);margin:5px 0 0}
 .header-right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.user-pill{
-  background:#172c40;border:1px solid var(--border);
-  border-radius:30px;padding:9px 13px;font-size:13px;
-}
-button.primary{
-  background:var(--blue);color:#061522;border:0;
-  border-radius:8px;padding:10px 14px;font-weight:bold;
-}
-button.secondary{
-  background:#1a3045;color:var(--text);
-  border:1px solid var(--border);border-radius:8px;padding:10px 13px;
-}
-button.danger{
-  background:#57252d;color:#ffdce0;border:1px solid #8d3b48;
-  border-radius:8px;padding:9px 12px;
-}
+.user-pill{background:#172c40;border:1px solid var(--border);border-radius:30px;padding:9px 13px;font-size:13px}
+button.primary{background:var(--blue);color:#061522;border:0;border-radius:8px;padding:10px 14px;font-weight:bold}
+button.secondary{background:#1a3045;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:10px 13px}
+button.danger{background:#57252d;color:#ffdce0;border:1px solid #8d3b48;border-radius:8px;padding:9px 12px}
 button:disabled{opacity:.4;cursor:not-allowed}
 .layout{display:flex;min-height:calc(100vh - 76px)}
-nav{
-  width:215px;flex-shrink:0;padding:20px 12px;
-  background:#0b1927;border-right:1px solid var(--border);
-}
-.nav-label{
-  color:#68849d;font-size:10px;letter-spacing:1.5px;
-  margin:12px 10px;
-}
-.nav-button{
-  width:100%;display:block;text-align:left;
-  padding:12px;margin:4px 0;border:0;border-radius:8px;
-  background:transparent;color:#a9bfd2;
-}
-.nav-button:hover,.nav-button.active{
-  background:#17334c;color:#fff;
-}
+nav{width:215px;flex-shrink:0;padding:20px 12px;background:#0b1927;border-right:1px solid var(--border)}
+.nav-label{color:#68849d;font-size:10px;letter-spacing:1.5px;margin:12px 10px}
+.nav-button{width:100%;display:block;text-align:left;padding:12px;margin:4px 0;border:0;border-radius:8px;background:transparent;color:#a9bfd2}
+.nav-button:hover,.nav-button.active{background:#17334c;color:#fff}
 main{flex:1;min-width:0;padding:25px;max-width:1500px}
 .page{display:none}
 .page.active{display:block}
-.page-heading{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:15px;flex-wrap:wrap;margin-bottom:20px;
-}
+.page-heading{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap;margin-bottom:20px}
 h2{margin:0 0 7px;font-size:25px}
 .subtitle{color:var(--muted);font-size:13px}
-.stats{
-  display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));
-  gap:14px;margin:20px 0;
-}
-.stat,.panel,.mission{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:12px;padding:18px;
-}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(130px,1fr));gap:14px;margin:20px 0}
+.stat,.panel,.mission{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px}
 .stat-label{font-size:12px;color:var(--muted)}
 .stat-number{font-size:29px;font-weight:bold;margin-top:9px}
 .panel{margin-bottom:17px}
 .panel h3{margin:0 0 14px;font-size:16px}
-.panel-header{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:12px;flex-wrap:wrap;margin-bottom:14px;
-}
-.grid-two{
-  display:grid;grid-template-columns:1.2fr .8fr;gap:16px;
-}
+.panel-header{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.grid-two{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
 .search-row{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:15px}
-input,select{
-  background:#081522;color:var(--text);
-  border:1px solid var(--border);border-radius:8px;
-  padding:11px;min-width:0;
-}
+input,select{background:#081522;color:var(--text);border:1px solid var(--border);border-radius:8px;padding:11px;min-width:0}
 .search-row input{flex:1;min-width:180px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th,td{text-align:left;padding:12px 9px;border-bottom:1px solid #263b50}
 th{color:#8faac0;font-weight:normal}
 td{color:#e2effb}
-.table-wrap{overflow-x:auto}
-.tag{
-  display:inline-block;padding:5px 8px;border-radius:20px;
-  font-size:11px;background:#23394e;color:#c9e5fa;
-}
-.tag.high{background:#542c32;color:#ffb5b5}
+.tag{display:inline-block;padding:5px 8px;border-radius:20px;font-size:11px;background:#23394e;color:#c9e5fa}
+.tag.high,.tag.extreme{background:#542c32;color:#ffb5b5}
 .tag.medium{background:#514126;color:#ffdc91}
 .tag.low{background:#194735;color:#9cf0c7}
 .tag.active{background:#173c59;color:#8bd5ff}
+.tag.critical{background:#51245d;color:#f0baff}
 .empty{color:var(--muted);padding:18px 0;font-size:13px}
-.map{
-  min-height:230px;border:1px solid var(--border);
-  border-radius:10px;position:relative;overflow:hidden;
-  background:
-    linear-gradient(35deg,transparent 48%,#28445a 49%,#28445a 51%,transparent 52%),
-    linear-gradient(120deg,transparent 47%,#28445a 48%,#28445a 50%,transparent 51%),
-    #0b1a29;
-  background-size:150px 120px,180px 150px,auto;
-}
-.map-label{
-  position:absolute;background:#142d43;border:1px solid #365a77;
-  padding:7px 10px;border-radius:7px;font-size:11px;
-}
-.map-label.one{top:25%;left:12%}
-.map-label.two{top:58%;left:55%}
-.map-label.three{top:20%;right:10%}
-.alert{
-  border-left:3px solid var(--yellow);padding:11px 13px;
-  background:#172638;border-radius:5px;margin:9px 0;font-size:13px;
-}
-.alert.high{border-color:var(--red)}
+.map{min-height:230px;border:1px solid var(--border);border-radius:10px;position:relative;overflow:hidden;background:linear-gradient(35deg,transparent 48%,#28445a 49%,#28445a 51%,transparent 52%),linear-gradient(120deg,transparent 47%,#28445a 48%,#28445a 50%,transparent 51%),#0b1a29;background-size:150px 120px,180px 150px,auto}
+.map-label{position:absolute;background:#142d43;border:1px solid #365a77;padding:7px 10px;border-radius:7px;font-size:11px}
+.map-label.one{top:25%;left:12%}.map-label.two{top:58%;left:55%}.map-label.three{top:20%;right:10%}
+.alert{border-left:3px solid var(--yellow);padding:11px 13px;background:#172638;border-radius:5px;margin:9px 0;font-size:13px}
+.alert.high,.alert.extreme{border-color:var(--red)}
 .alert p{color:var(--muted);margin:5px 0 0}
-.mission{
-  background:linear-gradient(120deg,#153c58,#102438);
-}
-.mission h3{margin:0 0 8px}
-.mission p{color:#b9d0e3;font-size:13px}
+.mission{background:linear-gradient(120deg,#153c58,#102438)}
+.mission h3{margin:0 0 8px}.mission p{color:#b9d0e3;font-size:13px}
 .mission-status{color:#8bd5ff;font-size:12px;margin-top:12px}
-.toast{
-  position:fixed;right:20px;bottom:20px;
-  background:#173c59;border:1px solid #4b9bc9;
-  padding:13px 18px;border-radius:9px;
-  display:none;z-index:5;box-shadow:0 8px 30px #0008;
-}
+.toast{position:fixed;right:20px;bottom:20px;background:#173c59;border:1px solid #4b9bc9;padding:13px 18px;border-radius:9px;display:none;z-index:5;box-shadow:0 8px 30px #0008;max-width:90vw}
 .small{font-size:12px;color:var(--muted)}
-.action-row{display:flex;gap:7px;flex-wrap:wrap}
-.case-card{
-  padding:14px;background:#14263a;border:1px solid var(--border);
-  border-radius:9px;margin:10px 0;
-}
-.case-card h4{margin:0 0 7px}
-.case-card p{font-size:12px;color:var(--muted)}
-footer{
-  color:#68849d;font-size:11px;text-align:center;
-  padding:25px;border-top:1px solid var(--border);
-}
+.action-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.case-card{padding:14px;background:#14263a;border:1px solid var(--border);border-radius:9px;margin:10px 0}
+.case-card h4{margin:0 0 7px}.case-card p{font-size:12px;color:var(--muted)}
+footer{color:#68849d;font-size:11px;text-align:center;padding:25px;border-top:1px solid var(--border)}
 @media(max-width:850px){
-  .layout{display:block}
-  nav{width:100%;display:flex;overflow-x:auto;padding:8px}
-  .nav-label{display:none}
-  .nav-button{width:auto;white-space:nowrap}
-  main{padding:16px}
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .grid-two{grid-template-columns:1fr}
+ .layout{display:block}nav{width:100%;display:flex;overflow-x:auto;padding:8px}
+ .nav-label{display:none}.nav-button{width:auto;white-space:nowrap}
+ main{padding:16px}.stats{grid-template-columns:repeat(2,1fr)}
+ .grid-two{grid-template-columns:1fr}
 }
 @media(max-width:450px){
-  header{padding:13px}
-  .brand h1{font-size:15px}
-  .stats{gap:8px}
-  .stat{padding:13px}
-  .stat-number{font-size:24px}
+ header{padding:13px}.brand h1{font-size:15px}
+ .stats{gap:8px}.stat{padding:13px}.stat-number{font-size:24px}
 }
 </style>
 </head>
-
 <body>
 <header>
-  <div class="brand">
-    <div class="logo">S</div>
-    <div>
-      <h1>CENTRAL CITY CRIME WATCH</h1>
-      <p>S.T.A.R. LABS OPERATIONS NETWORK</p>
-    </div>
-  </div>
-
-  <div class="header-right">
-    <div class="user-pill" id="userDisplay">Loading account...</div>
-    <button class="secondary" onclick="logout()">Log out</button>
-  </div>
+ <div class="brand">
+  <div class="logo">S</div>
+  <div><h1>CENTRAL CITY CRIME WATCH</h1><p>S.T.A.R. LABS OPERATIONS NETWORK</p></div>
+ </div>
+ <div class="header-right">
+  <div class="user-pill" id="userDisplay">Loading account...</div>
+  <button class="secondary" onclick="logout()">Log out</button>
+ </div>
 </header>
 
 <div class="layout">
 <nav>
-  <div class="nav-label">OPERATIONS</div>
-  <button class="nav-button active" data-page="dashboard">▦ Dashboard</button>
-  <button class="nav-button" data-page="villains">♟ Villain Database</button>
-  <button class="nav-button" data-page="cases">▤ Active Cases</button>
-  <button class="nav-button" data-page="alerts">⚠ Alerts</button>
-  <button class="nav-button" data-page="incidentlog">◷ Incident Log</button>
-  <div class="nav-label">TEAM</div>
-  <button class="nav-button" data-page="team">♧ Team Communications</button>
+ <div class="nav-label">OPERATIONS</div>
+ <button class="nav-button active" data-page="dashboard">▦ Dashboard</button>
+ <button class="nav-button" data-page="villains">♟ Villain Database</button>
+ <button class="nav-button" data-page="cases">▤ Active Cases</button>
+ <button class="nav-button" data-page="alerts">⚠ Alerts</button>
+ <button class="nav-button" data-page="incidentlog">◷ Incident Log</button>
+ <div class="nav-label">TEAM</div>
+ <button class="nav-button" data-page="team">♧ Team Communications</button>
 </nav>
 
 <main>
-
-<!-- DASHBOARD -->
 <section class="page active" id="dashboard">
-  <div class="page-heading">
-    <div>
-      <h2 id="welcomeTitle">Welcome</h2>
-      <div class="subtitle">Central City operations overview</div>
-    </div>
-    <span class="tag active">SYSTEM ONLINE</span>
+ <div class="page-heading">
+  <div><h2 id="welcomeTitle">Welcome</h2><div class="subtitle">Central City operations overview</div></div>
+  <span class="tag active">SYSTEM ONLINE</span>
+ </div>
+ <div class="stats">
+  <div class="stat"><div class="stat-label">KNOWN VILLAINS</div><div class="stat-number" id="villainCount">0</div></div>
+  <div class="stat"><div class="stat-label">ACTIVE CASES</div><div class="stat-number" id="caseCount">0</div></div>
+  <div class="stat"><div class="stat-label">ARRESTS</div><div class="stat-number" id="arrestCount">0</div></div>
+  <div class="stat"><div class="stat-label">OPEN ALERTS</div><div class="stat-number" id="alertCount">0</div></div>
+ </div>
+ <div class="grid-two">
+  <div class="panel">
+   <h3>Central City Incident Map</h3>
+   <div class="map">
+    <div class="map-label one">● Downtown</div>
+    <div class="map-label two">● Industrial District</div>
+    <div class="map-label three">● Airport</div>
+   </div>
+   <p class="small">Simulated map for fictional roleplay. Not live tracking.</p>
   </div>
-
-  <div class="stats">
-    <div class="stat">
-      <div class="stat-label">KNOWN VILLAINS</div>
-      <div class="stat-number" id="villainCount">0</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">ACTIVE CASES</div>
-      <div class="stat-number" id="caseCount">0</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">ARRESTS</div>
-      <div class="stat-number" id="arrestCount">0</div>
-    </div>
-    <div class="stat">
-      <div class="stat-label">OPEN ALERTS</div>
-      <div class="stat-number" id="alertCount">0</div>
-    </div>
-  </div>
-
-  <div class="grid-two">
-    <div class="panel">
-      <h3>Central City Incident Map</h3>
-      <div class="map">
-        <div class="map-label one">● Downtown</div>
-        <div class="map-label two">● Industrial District</div>
-        <div class="map-label three">● Airport</div>
-      </div>
-      <p class="small">Simulated map for fictional roleplay. Not live tracking.</p>
-    </div>
-
-    <div class="panel">
-      <h3>Latest Alerts</h3>
-      <div id="dashboardAlerts"></div>
-    </div>
-  </div>
-
-  <div class="mission">
-    <h3>⚡ Barry Allen — Current Assignment</h3>
-    <p id="missionText">No assignment has been issued yet.</p>
-    <div class="mission-status" id="missionStatus">Awaiting dispatch</div>
-  </div>
+  <div class="panel"><h3>Latest Alerts</h3><div id="dashboardAlerts"></div></div>
+ </div>
+ <div class="mission">
+  <h3>⚡ Barry Allen — Current Assignment</h3>
+  <p id="missionText">No assignment has been issued yet.</p>
+  <div class="mission-status" id="missionStatus">Awaiting dispatch</div>
+ </div>
 </section>
 
-<!-- VILLAIN DATABASE -->
 <section class="page" id="villains">
-  <div class="page-heading">
-    <div>
-      <h2>Villain Database</h2>
-      <div class="subtitle">Search known suspects and manually dispatch Barry.</div>
-    </div>
+ <div class="page-heading">
+  <div><h2>Villain Database</h2><div class="subtitle">50 fictional villain files · Search, investigate, and dispatch Barry.</div></div>
+  <span class="tag critical">THREAT ARCHIVE</span>
+ </div>
+ <div class="panel">
+  <div class="search-row">
+   <input id="villainSearch" placeholder="Search villains, names, locations, abilities...">
+   <select id="threatFilter">
+    <option value="all">All threat levels</option>
+    <option value="5">Level 5 — Extreme</option>
+    <option value="4">Level 4 — High</option>
+    <option value="3">Level 3 — Elevated</option>
+    <option value="2">Level 2 — Moderate</option>
+    <option value="1">Level 1 — Low</option>
+   </select>
   </div>
-
-  <div class="panel">
-    <div class="search-row">
-      <input id="villainSearch" placeholder="Search villains, names, locations...">
-      <select id="threatFilter">
-        <option value="all">All threat levels</option>
-        <option value="HIGH">High threat</option>
-        <option value="MEDIUM">Medium threat</option>
-        <option value="LOW">Low threat</option>
-      </select>
-    </div>
-
-    <div class="table-wrap">
-      <table>
-        <thead>
-          <tr>
-            <th>Villain</th>
-            <th>Real Name</th>
-            <th>Location</th>
-            <th>Threat</th>
-            <th>Status</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="villainTable"></tbody>
-      </table>
-    </div>
+  <div class="small" id="villainResultCount"></div>
+  <div class="table-wrap">
+   <table>
+    <thead><tr><th>Villain</th><th>Real Name</th><th>Location</th><th>Threat</th><th>Status</th><th>Action</th></tr></thead>
+    <tbody id="villainTable"></tbody>
+   </table>
   </div>
-
-  <div class="panel" id="villainDetails">
-    <h3>Villain Details</h3>
-    <div class="empty">Select a villain to view their file.</div>
-  </div>
+ </div>
+ <div class="panel" id="villainDetails">
+  <h3>Villain Details</h3><div class="empty">Select a villain to view their file.</div>
+ </div>
 </section>
 
-<!-- ACTIVE CASES -->
 <section class="page" id="cases">
-  <div class="page-heading">
-    <div>
-      <h2>Active Cases</h2>
-      <div class="subtitle">Track assignments and case progress.</div>
-    </div>
-  </div>
-  <div class="panel">
-    <div id="caseList"></div>
-  </div>
+ <div class="page-heading"><div><h2>Active Cases</h2><div class="subtitle">Track Barry's assignments and case progress.</div></div></div>
+ <div class="panel"><div id="caseList"></div></div>
 </section>
 
-<!-- ALERTS -->
 <section class="page" id="alerts">
-  <div class="page-heading">
-    <div>
-      <h2>Alerts</h2>
-      <div class="subtitle">Reports entered into the fictional system.</div>
-    </div>
-  </div>
-  <div class="panel">
-    <div id="alertList"></div>
-  </div>
+ <div class="page-heading"><div><h2>Alerts</h2><div class="subtitle">Reports entered into the fictional system.</div></div></div>
+ <div class="panel"><div id="alertList"></div></div>
 </section>
 
-<!-- INCIDENT LOG -->
 <section class="page" id="incidentlog">
-  <div class="page-heading">
-    <div>
-      <h2>Incident Log</h2>
-      <div class="subtitle">Record of actions taken in this session.</div>
-    </div>
-    <button class="secondary" onclick="exportLog()">Export Log</button>
+ <div class="page-heading">
+  <div><h2>Incident Log</h2><div class="subtitle">Record of actions taken in this session.</div></div>
+  <button class="secondary" onclick="exportLog()">Export Log</button>
+ </div>
+ <div class="panel"><div id="logList"></div></div>
+</section>
+
+<section class="page" id="team">
+ <div class="page-heading"><div><h2>Team Communications</h2><div class="subtitle">S.T.A.R. Labs team directory.</div></div></div>
+ <div class="grid-two">
+  <div class="panel">
+   <h3>Team Members</h3>
+   <div class="case-card"><h4>Henry</h4><p>Site Manager · Website administrator</p></div>
+   <div class="case-card"><h4>Caitlin Snow</h4><p>Lead Admin · Medical and operations support</p></div>
+   <div class="case-card"><h4>Barry Allen</h4><p>Field Agent · The Flash · Only arrest-authorized account</p></div>
+   <div class="case-card"><h4>Cisco Ramon</h4><p>Barry's Support · Dispatch and operations support</p></div>
   </div>
   <div class="panel">
-    <div id="logList"></div>
+   <h3>Team Message</h3>
+   <p class="small">Send a message to the fictional team communication log.</p>
+   <input id="teamMessage" placeholder="Type a team message..." style="width:100%">
+   <button class="primary" style="margin-top:10px" onclick="sendMessage()">Send Message</button>
+   <div id="teamMessages" style="margin-top:15px"></div>
   </div>
+ </div>
 </section>
 
-<!-- TEAM -->
-<section class="page" id="team">
-  <div class="page-heading">
-    <div>
-      <h2>Team Communications</h2>
-      <div class="subtitle">S.T.A.R. Labs team directory.</div>
-    </div>
-  </div>
-  <div class="grid-two">
-    <div class="panel">
-      <h3>Team Members</h3>
-      <div class="case-card">
-        <h4>Henry</h4>
-        <p>Site Manager · Website administrator</p>
-      </div>
-      <div class="case-card">
-        <h4>Caitlin Snow</h4>
-        <p>Lead Admin · Medical and operations support</p>
-      </div>
-      <div class="case-card">
-        <h4>Barry Allen</h4>
-        <p>Field Agent · Central City assignments</p>
-      </div>
-      <div class="case-card">
-        <h4>Cisco Ramon</h4>
-        <p>Technical Support · No website account</p>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>Team Message</h3>
-      <p class="small">Send a message to the fictional team communication log.</p>
-      <input id="teamMessage" placeholder="Type a team message..." style="width:100%">
-      <button class="primary" style="margin-top:10px" onclick="sendMessage()">Send Message</button>
-      <div id="teamMessages" style="margin-top:15px"></div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  CENTRAL CITY CRIME WATCH · S.T.A.R. LABS
-  <br>Fictional roleplay dashboard. No real crime reports or live police data.
-</footer>
+<footer>CENTRAL CITY CRIME WATCH · S.T.A.R. LABS<br>Fictional roleplay dashboard. No real crime reports or live police data.</footer>
 </main>
 </div>
-
 <div class="toast" id="toast"></div>
 
 <script>
-// ACCOUNT INFORMATION
-const currentUser = sessionStorage.getItem("starUser");
-const currentRole = sessionStorage.getItem("starRole");
-
-document.getElementById("userDisplay").textContent =
-  currentUser + " · " + currentRole;
-
-document.getElementById("welcomeTitle").textContent =
-  "Welcome back, " + currentUser;
-
-// FICTIONAL VILLAIN DATABASE
-const criminals = [
-  {
-    id:1,
-    name:"The Robber",
-    realName:"Unknown",
-    location:"Downtown Central City",
-    threat:"LOW",
-    status:"Wanted",
-    crime:"Robbery",
-    technology:"Unknown",
-    description:"A local robber reported in the downtown area."
-  },
-  {
-    id:2,
-    name:"Captain Cold",
-    realName:"Leonard Snart",
-    location:"Industrial District",
-    threat:"HIGH",
-    status:"Wanted",
-    crime:"Theft and freezing attacks",
-    technology:"Cold technology",
-    description:"Uses cold-based technology during crimes."
-  },
-  {
-    id:3,
-    name:"Weather Wizard",
-    realName:"Mark Mardon",
-    location:"Central City Airport",
-    threat:"HIGH",
-    status:"Wanted",
-    crime:"Weather manipulation",
-    technology:"Weather control",
-    description:"Can manipulate weather conditions."
-  },
-  {
-    id:4,
-    name:"Mirror Master",
-    realName:"Sam Scudder",
-    location:"Downtown Central City",
-    threat:"MEDIUM",
-    status:"Wanted",
-    crime:"Break-ins and mirror-related incidents",
-    technology:"Mirror technology",
-    description:"Uses mirror technology to enter and escape locations."
-  }
-];
-
-let cases = [];
-let alerts = [
-  {
-    title:"Captain Cold sighting",
-    description:"Reported near the Industrial District.",
-    threat:"HIGH"
-  },
-  {
-    title:"Weather Wizard sighting",
-    description:"Reported near Central City Airport.",
-    threat:"HIGH"
-  },
-  {
-    title:"Downtown robber report",
-    description:"A robbery was reported downtown.",
-    threat:"LOW"
-  }
-];
-
-let incidentLog = [];
-let arrests = 0;
-let mission = null;
-let selectedVillain = null;
-let messages = [];
-
-// PERMISSIONS
-function canManage(){
-  return currentRole === "Site Manager" ||
-         currentRole === "Lead Admin";
-         currentRole === "Barrys Support";
-}
-
-function canArrest(){
-  return canManage() || currentRole === "Field Agent";
-}
-
-// NAVIGATION
-document.querySelectorAll(".nav-button").forEach(button=>{
-  button.addEventListener("click",()=>{
-    document.querySelectorAll(".nav-button").forEach(b=>b.classList.remove("active"));
-    document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
-
-    button.classList.add("active");
-    document.getElementById(button.dataset.page).classList.add("active");
-  });
-});
-
-// NOTIFICATIONS
-function toast(message){
-  const element = document.getElementById("toast");
-  element.textContent = message;
-  element.style.display = "block";
-  clearTimeout(window.toastTimer);
-  window.toastTimer = setTimeout(()=>{
-    element.style.display = "none";
-  },2800);
-}
-
-function logAction(message){
-  incidentLog.unshift({
-    message,
-    time:new Date().toLocaleString()
-  });
-  renderLog();
-}
-
-// VILLAIN DATABASE
-function renderCriminals(){
-  const search = document.getElementById("villainSearch").value.toLowerCase();
-  const threat = document.getElementById("threatFilter").value;
-  const table = document.getElementById("villainTable");
-
-  const filtered = criminals.filter(v=>{
-    const matchesSearch =
-      (v.name+" "+v.realName+" "+v.location+" "+v.crime)
-      .toLowerCase().includes(search);
-    const matchesThreat = threat === "all" || v.threat === threat;
-    return matchesSearch && matchesThreat;
-  });
-
-  table.innerHTML = "";
-
-  if(!filtered.length){
-    table.innerHTML =
-      '<tr><td colspan="6" class="empty">No matching villains found.</td></tr>';
-    return;
-  }
-
-  filtered.forEach(v=>{
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td><strong>${v.name}</strong></td>
-      <td>${v.realName}</td>
-      <td>${v.location}</td>
-      <td><span class="tag ${v.threat.toLowerCase()}">${v.threat}</span></td>
-      <td>${v.status}</td>
-      <td><button class="secondary" onclick="details(${v.id})">View</button></td>
-    `;
-    table.appendChild(row);
-  });
-}
-
-function details(id){
-  const v = criminals.find(item=>item.id===id);
-  selectedVillain = v;
-
-  document.getElementById("villainDetails").innerHTML = `
-    <h3>${v.name}</h3>
-    <p><strong>Real name:</strong> ${v.realName}</p>
-    <p><strong>Location:</strong> ${v.location}</p>
-    <p><strong>Threat:</strong> ${v.threat}</p>
-    <p><strong>Status:</strong> ${v.status}</p>
-    <p><strong>Reported crimes:</strong> ${v.crime}</p>
-    <p><strong>Technology:</strong> ${v.technology}</p>
-    <p>${v.description}</p>
-    <div class="action-row">
-      <button class="primary" onclick="dispatch(${v.id})"
-        ${canManage() ? "" : "disabled"}>
-        Dispatch Barry
-      </button>
-      <button class="secondary" onclick="addAlert(${v.id})"
-        ${canManage() ? "" : "disabled"}>
-        Create Alert
-      </button>
-      <button class="danger" onclick="arrest(${v.id})"
-        ${canArrest() ? "" : "disabled"}>
-        Mark Arrested
-      </button>
-    </div>
-  `;
-}
-
-// MANUAL DISPATCH ONLY
-function dispatch(id){
-  if(!canManage()){
-    toast("You do not have dispatch permission.");
-    return;
-  }
-
-  const v = criminals.find(item=>item.id===id);
-  if(!v || v.status==="Arrested") return;
-
-  const existing = cases.find(c=>c.villainId===id && c.status==="Active");
-  if(existing){
-    toast("Barry already has an active assignment for this villain.");
-    return;
-  }
-
-  const newCase = {
-    id:Date.now(),
-    villainId:id,
-    villain:v.name,
-    location:v.location,
-    status:"Active",
-    assignedTo:"Barry Allen",
-    created:new Date().toLocaleString()
-  };
-
-  cases.unshift(newCase);
-  mission = newCase;
-
-  document.getElementById("missionText").textContent =
-    "Investigate " + v.name + " near " + v.location + ".";
-  document.getElementById("missionStatus").textContent =
-    "DISPATCHED TO BARRY ALLEN";
-
-  logAction("Barry Allen dispatched to " + v.name + ".");
-  renderAll();
-  toast("Barry has been dispatched!");
-}
-
-// ARREST ACTION
-function arrest(id){
-  if(!canArrest()){
-    toast("You do not have permission to mark arrests.");
-    return;
-  }
-
-  const v = criminals.find(item=>item.id===id);
-  if(!v || v.status==="Arrested"){
-    toast("This villain is already marked arrested.");
-    return;
-  }
-
-  v.status = "Arrested";
-  arrests++;
-
-  cases.forEach(c=>{
-    if(c.villainId===id && c.status==="Active"){
-      c.status="Completed";
-    }
-  });
-
-  if(mission && mission.villainId===id){
-    mission.status="Completed";
-    document.getElementById("missionStatus").textContent =
-      "ASSIGNMENT COMPLETED";
-  }
-
-  logAction(v.name + " marked as arrested.");
-  renderAll();
-  toast(v.name + " marked as arrested.");
-}
-
-// CREATE ALERT
-function addAlert(id){
-  if(!canManage()){
-    toast("You do not have permission to create alerts.");
-    return;
-  }
-
-  const v = criminals.find(item=>item.id===id);
-  alerts.unshift({
-    title:v.name+" alert",
-    description:"New report entered for "+v.location+".",
-    threat:v.threat
-  });
-
-  logAction("New alert created for "+v.name+".");
-  renderAll();
-  toast("Alert created.");
-}
-
-// CASES
-function renderCases(){
-  const container = document.getElementById("caseList");
-  container.innerHTML = "";
-
-  if(!cases.length){
-    container.innerHTML =
-      '<div class="empty">No cases have been opened. Dispatch Barry manually from the Villain Database.</div>';
-    return;
-  }
-
-  cases.forEach(c=>{
-    const card = document.createElement("div");
-    card.className = "case-card";
-    card.innerHTML = `
-      <h4>${c.villain}</h4>
-      <p>Assigned to: ${c.assignedTo}</p>
-      <p>Location: ${c.location}</p>
-      <p>Created: ${c.created}</p>
-      <span class="tag ${c.status==="Active"?"active":"low"}">${c.status}</span>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// ALERTS
-function renderAlerts(){
-  const container = document.getElementById("alertList");
-  const dashboard = document.getElementById("dashboardAlerts");
-
-  container.innerHTML = "";
-  dashboard.innerHTML = "";
-
-  if(!alerts.length){
-    container.innerHTML = '<div class="empty">No alerts.</div>';
-    dashboard.innerHTML = '<div class="empty">No alerts.</div>';
-    return;
-  }
-
-  alerts.forEach((a,index)=>{
-    const item = document.createElement("div");
-    item.className = "alert "+(a.threat==="HIGH"?"high":"");
-    item.innerHTML = `
-      <strong>${a.title}</strong>
-      <p>${a.description}</p>
-      <span class="tag ${a.threat.toLowerCase()}">${a.threat} THREAT</span>
-    `;
-    container.appendChild(item);
-
-    if(index<3){
-      dashboard.appendChild(item.cloneNode(true));
-    }
-  });
-}
-
-// INCIDENT LOG
-function renderLog(){
-  const container = document.getElementById("logList");
-  container.innerHTML = "";
-
-  if(!incidentLog.length){
-    container.innerHTML = '<div class="empty">No actions recorded yet.</div>';
-    return;
-  }
-
-  incidentLog.forEach(entry=>{
-    const item = document.createElement("div");
-    item.className = "case-card";
-    item.innerHTML = `
-      <strong>${entry.message}</strong>
-      <p>${entry.time}</p>
-    `;
-    container.appendChild(item);
-  });
-}
-
-function exportLog(){
-  const textContent = incidentLog.map(item=>
-    item.time+" — "+item.message
-  ).join("\n");
-
-  const blob = new Blob([textContent || "No incident log entries."],
-    {type:"text/plain"});
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "Central-City-Incident-Log.txt";
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
-// TEAM MESSAGES
-function sendMessage(){
-  const input = document.getElementById("teamMessage");
-  const message = input.value.trim();
-
-  if(!message) return;
-
-  messages.unshift({
-    sender:currentUser,
-    message,
-    time:new Date().toLocaleTimeString()
-  });
-
-  input.value = "";
-  renderMessages();
-  logAction(currentUser+" sent a team message.");
-}
-
-function renderMessages(){
-  const container = document.getElementById("teamMessages");
-  container.innerHTML = "";
-
-  messages.forEach(item=>{
-    const card = document.createElement("div");
-    card.className = "case-card";
-    card.innerHTML = `
-      <strong>${item.sender}</strong>
-      <p>${item.message}</p>
-      <span class="small">${item.time}</span>
-    `;
-    container.appendChild(card);
-  });
-}
-
-// DASHBOARD STATS
-function updateStats(){
-  document.getElementById("villainCount").textContent = criminals.length;
-  document.getElementById("caseCount").textContent =
-    cases.filter(c=>c.status==="Active").length;
-  document.getElementById("arrestCount").textContent = arrests;
-  document.getElementById("alertCount").textContent = alerts.length;
-}
-
-function renderAll(){
-  renderCriminals();
-  renderCases();
-  renderAlerts();
-  renderLog();
-  renderMessages();
-  updateStats();
-}
-
-// LOG OUT
-function logout(){
+(function(){
+ const approved=sessionStorage.getItem("loginApproved");
+ const username=sessionStorage.getItem("starUser");
+ const role=sessionStorage.getItem("starRole");
+ if(approved!=="yes"||!username||!role){
   sessionStorage.removeItem("starUser");
   sessionStorage.removeItem("starRole");
   sessionStorage.removeItem("loginApproved");
   window.location.replace("login.html");
+ }
+ sessionStorage.removeItem("loginApproved");
+})();
+
+const currentUser=sessionStorage.getItem("starUser");
+const currentRole=sessionStorage.getItem("starRole");
+
+document.getElementById("userDisplay").textContent=currentUser+" · "+currentRole;
+document.getElementById("welcomeTitle").textContent="Welcome back, "+currentUser;
+
+// THREAT SCALE:
+// 5 = Extreme, 4 = High, 3 = Elevated, 2 = Moderate, 1 = Low
+const criminals=[
+{id:1,name:"Anti-Monitor",realName:"Mobius",location:"Multiverse",level:5,status:"Threat archive",crime:"Multiversal crisis",technology:"Anti-matter energy",description:"A cosmic-scale enemy associated with the destruction of entire universes. Included as the largest-scale threat in this archive."},
+{id:2,name:"Reverse-Flash",realName:"Eobard Thawne",location:"Unknown / Time-displaced",level:5,status:"Wanted",crime:"Time manipulation and attacks on Team Flash",technology:"Negative Speed Force",description:"Barry Allen's arch-nemesis. A time-traveling speedster whose knowledge of Barry makes him an especially personal threat."},
+{id:3,name:"Zoom",realName:"Hunter Zolomon",location:"Earth-2 / Central City",level:5,status:"Wanted",crime:"Metahuman attacks and speed-related incidents",technology:"Time manipulation",description:"A terrifying speedster who manipulates relative time and pushed Barry to his limits."},
+{id:4,name:"Savitar",realName:"Time Remnant of Barry Allen",location:"Speed Force",level:5,status:"Unknown",crime:"Timeline interference",technology:"Speed Force armor",description:"A dangerous speedster connected to Barry's own timeline and the Speed Force."},
+{id:5,name:"The Thinker",realName:"Clifford DeVoe",location:"Central City",level:5,status:"Former major threat",crime:"Metahuman power theft and citywide schemes",technology:"Thinking Cap / advanced intelligence",description:"A highly intelligent strategist who used stolen metahuman abilities as part of a large-scale plan."},
+{id:6,name:"Bloodwork",realName:"Ramsey Rosso",location:"Central City",level:5,status:"Contained in records",crime:"Metahuman biological incidents",technology:"Dark matter-altered blood",description:"A scientist whose experiments created a dangerous metahuman condition."},
+{id:7,name:"Godspeed",realName:"August Heart",location:"Central City",level:5,status:"Wanted",crime:"Speedster attacks",technology:"Artificial speed",description:"A speedster whose pursuit of power made him a major danger to Central City."},
+{id:8,name:"Red Death",realName:"Ryan Wilder (Earth-4125)",location:"Alternate timeline",level:5,status:"Unknown",crime:"Alternate-timeline incursions",technology:"Speed Force technology",description:"A speedster threat from another timeline with a dangerous connection to the Flash legacy."},
+{id:9,name:"Cobalt Blue",realName:"Eddie Thawne",location:"Central City",level:5,status:"Unknown",crime:"Timeline and speed-energy incidents",technology:"Blue flame energy",description:"A powerful enemy connected to the Thawne family and the Flash's history."},
+{id:10,name:"Cicada",realName:"Orlin Dwyer",location:"Central City",level:4,status:"Former major threat",crime:"Metahuman targeting",technology:"Power-dampening dagger",description:"A metahuman hunter whose weapon could suppress other metahumans' abilities."},
+{id:11,name:"Cicada II",realName:"Grace Gibbons",location:"Central City",level:4,status:"Former major threat",crime:"Metahuman targeting",technology:"Power-dampening technology",description:"A later Cicada whose actions continued the threat against metahumans."},
+{id:12,name:"The Monitor",realName:"Mar Novu",location:"Multiverse",level:5,status:"Cosmic figure",crime:"Multiverse tests and crisis events",technology:"Cosmic abilities",description:"A cosmic figure involved in major multiverse events. Threat classification reflects the scale of those events, not a standard criminal record."},
+{id:13,name:"The Robber",realName:"Unknown",location:"Downtown Central City",level:1,status:"Wanted",crime:"Robbery",technology:"Unknown",description:"A local robber reported in the downtown area. Custom Central City Crime Watch entry."},
+{id:14,name:"Captain Cold",realName:"Leonard Snart",location:"Industrial District",level:4,status:"Wanted",crime:"Theft and cold-technology incidents",technology:"Cold gun",description:"A clever member of the Rogues who uses cold technology and careful planning."},
+{id:15,name:"Weather Wizard",realName:"Mark Mardon",location:"Central City Airport",level:4,status:"Wanted",crime:"Weather manipulation",technology:"Weather-control technology",description:"Can create dangerous weather conditions and has been reported near the airport."},
+{id:16,name:"Mirror Master",realName:"Sam Scudder",location:"Downtown Central City",level:4,status:"Wanted",crime:"Break-ins and mirror-related incidents",technology:"Mirror technology",description:"Uses mirror-based technology to move through reflective surfaces and evade capture."},
+{id:17,name:"Heat Wave",realName:"Mick Rory",location:"Industrial District",level:3,status:"Wanted",crime:"Property damage and theft",technology:"Heat technology",description:"A member of the Rogues who uses heat-based equipment."},
+{id:18,name:"The Trickster",realName:"James Jesse",location:"Central City",level:3,status:"Wanted",crime:"Pranks and elaborate schemes",technology:"Trick devices",description:"An unpredictable criminal known for elaborate tricks and theatrical plans."},
+{id:19,name:"Pied Piper",realName:"Hartley Rathaway",location:"Downtown Central City",level:3,status:"Unknown",crime:"Technology-related incidents",technology:"Sound technology",description:"A skilled sound-based metahuman whose history with Team Flash is complicated."},
+{id:20,name:"Gorilla Grodd",realName:"Grodd",location:"Gorilla City",level:5,status:"High priority",crime:"Telepathic incidents",technology:"Advanced telepathy",description:"An intelligent gorilla with powerful telepathic abilities and a history of challenging the Flash."},
+{id:21,name:"Abra Kadabra",realName:"Unknown",location:"Time-displaced",level:4,status:"Wanted",crime:"Technology-assisted deception",technology:"Future technology",description:"A time-traveling performer whose advanced technology can appear like magic."},
+{id:22,name:"Turtle",realName:"Russell Glosson",location:"Central City",level:3,status:"Unknown",crime:"Speed-related thefts",technology:"Kinetic energy manipulation",description:"Can slow the movement of objects and people around him."},
+{id:23,name:"Peek-a-Boo",realName:"Shawna Baez",location:"Central City",level:2,status:"Unknown",crime:"Theft",technology:"Teleportation",description:"A metahuman who can teleport over short distances."},
+{id:24,name:"Girder",realName:"Tony Woodward",location:"Central City",level:3,status:"Unknown",crime:"Assault and property damage",technology:"Metal transformation",description:"A metahuman whose body can transform into metal."},
+{id:25,name:"Plastique",realName:"Bette Sans Souci",location:"Central City",level:3,status:"Unknown",crime:"Explosive-energy incidents",technology:"Energy conversion",description:"A metahuman who can turn objects into explosive material. This is a fictional character profile."},
+{id:26,name:"Rainbow Raider",realName:"Roy G. Bivolo",location:"Downtown Central City",level:2,status:"Unknown",crime:"Emotional manipulation incidents",technology:"Emotion-altering energy",description:"Can influence emotions through colored energy."},
+{id:27,name:"Peek-a-Boo's associate",realName:"Unknown",location:"Central City",level:1,status:"Unconfirmed",crime:"Unconfirmed reports",technology:"Unknown",description:"An unconfirmed supporting entry in the fictional archive."},
+{id:28,name:"The Top",realName:"Roscoe Dillon",location:"Central City",level:3,status:"Unknown",crime:"Disorientation incidents",technology:"Mind-altering abilities",description:"A classic Flash adversary associated with disorienting mental effects."},
+{id:29,name:"Tar Pit",realName:"Joey Monteleone",location:"Central City",level:3,status:"Unknown",crime:"Metahuman incidents",technology:"Asphalt transformation",description:"A metahuman who can transform into a tar-like substance."},
+{id:30,name:"Block",realName:"Isabel Rochev",location:"Central City",level:3,status:"Unknown",crime:"Metahuman incidents",technology:"Density manipulation",description:"Can create areas of altered density that affect movement."},
+{id:31,name:"Folded Man",realName:"Edwin Gauss",location:"Central City",level:3,status:"Unknown",crime:"Dimensional incidents",technology:"Dimensional manipulation",description:"Can move through unusual dimensions and spaces."},
+{id:32,name:"Kilg%re",realName:"Unknown",location:"Central City",level:4,status:"Unknown",crime:"Technology interference",technology:"Technopathy",description:"A digital metahuman threat capable of interacting with electronic systems."},
+{id:33,name:"The Fiddler",realName:"Isaac Bowin",location:"Central City",level:2,status:"Unknown",crime:"Sound-related incidents",technology:"Sound manipulation",description:"A Flash adversary associated with sound-based abilities."},
+{id:34,name:"Blacksmith",realName:"Amunet Black",location:"Central City",level:4,status:"Wanted",crime:"Black-market metahuman activity",technology:"Metahuman network",description:"A powerful underworld figure with connections to metahuman criminals."},
+{id:35,name:"Goldface",realName:"Keith Kenyon",location:"Central City",level:3,status:"Wanted",crime:"Organized theft",technology:"Gold transformation",description:"A criminal with gold-related metahuman abilities and underworld connections."},
+{id:36,name:"The Rival",realName:"Edward Clariss",location:"Central City",level:4,status:"Unknown",crime:"Speedster incidents",technology:"Speed Force abilities",description:"A speedster adversary associated with an alternate Flash history."},
+{id:37,name:"Trajectory",realName:"Eliza Harmon",location:"Central City",level:3,status:"Former threat",crime:"Speed-related incidents",technology:"Speed-enhancing drug in story",description:"A speedster whose story involved unstable attempts to gain super speed."},
+{id:38,name:"Kilgore",realName:"Unknown",location:"Central City",level:3,status:"Unknown",crime:"Technology-related incidents",technology:"Mechanical control",description:"A technology-focused adversary in the wider Flash rogues gallery."},
+{id:39,name:"Prank",realName:"Unknown",location:"Central City",level:2,status:"Unknown",crime:"Disruption and deception",technology:"Trick devices",description:"A minor adversary associated with elaborate tricks."},
+{id:40,name:"Rainbow Raider II",realName:"Prysm",location:"Central City",level:2,status:"Unknown",crime:"Emotion-related incidents",technology:"Color energy",description:"A later character using color-based abilities."},
+{id:41,name:"The Folded Man",realName:"Edwin Gauss",location:"Central City",level:3,status:"Unknown",crime:"Dimensional incidents",technology:"Dimensional manipulation",description:"A dimensional traveler who can move through folded space."},
+{id:42,name:"Blood Brothers",realName:"Various",location:"Central City",level:2,status:"Unknown",crime:"Group incidents",technology:"Unknown",description:"A group entry retained in the expanded fictional archive."},
+{id:43,name:"The Hotness",realName:"Unknown",location:"Central City",level:2,status:"Unknown",crime:"Heat-related incidents",technology:"Heat abilities",description:"A lesser-known Flash adversary associated with heat."},
+{id:44,name:"Murmur",realName:"Michael Amar",location:"Central City",level:3,status:"Unknown",crime:"Metahuman incidents",technology:"Metahuman abilities",description:"A dangerous criminal from the wider Flash rogues gallery."},
+{id:45,name:"Girder's Crew",realName:"Various",location:"Industrial District",level:2,status:"Unknown",crime:"Organized theft",technology:"Unknown",description:"A fictional supporting group associated with local criminal activity."},
+{id:46,name:"The Mist",realName:"Kyle Nimbus",location:"Central City",level:3,status:"Unknown",crime:"Metahuman incidents",technology:"Gas-form transformation",description:"A metahuman who can transform into a mist-like form."},
+{id:47,name:"Doctor Alchemy",realName:"Julian Albert",location:"Central City",level:4,status:"Unknown",crime:"Alchemy-related incidents",technology:"Philosopher's Stone",description:"A mysterious figure connected to the Philosopher's Stone and dangerous transformations."},
+{id:48,name:"The Shade",realName:"Richard Swift",location:"Central City",level:4,status:"Unknown",crime:"Shadow-related incidents",technology:"Shadow manipulation",description:"A shadow-powered adversary from the wider DC universe."},
+{id:49,name:"Eclipso",realName:"Eclipso",location:"Unknown",level:5,status:"Unconfirmed",crime:"Supernatural incidents",technology:"Dark energy",description:"A supernatural DC threat included for expanded crossover roleplay."},
+{id:50,name:"Paradox",realName:"Unknown",location:"Outside time and space",level:5,status:"Unknown",crime:"Time and multiverse interference",technology:"Temporal energy",description:"A cosmic-scale enemy connected to time and space paradoxes."}
+];
+
+let cases=[];
+let alerts=[
+ {title:"Captain Cold sighting",description:"Reported near the Industrial District.",level:4},
+ {title:"Weather Wizard sighting",description:"Reported near Central City Airport.",level:4},
+ {title:"Downtown robber report",description:"A robbery was reported downtown.",level:1},
+ {title:"Reverse-Flash alert",description:"Unconfirmed speedster activity in Central City.",level:5}
+];
+let incidentLog=[];
+let arrests=0;
+let mission=null;
+let selectedVillain=null;
+let messages=[];
+
+function escapeHTML(value){
+ return String(value??"").replace(/[&<>"']/g,char=>({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+ }[char]));
+}
+function threatName(level){
+ return ["","LOW","MODERATE","ELEVATED","HIGH","EXTREME"][level]||"UNKNOWN";
+}
+function threatClass(level){
+ return level===5?"extreme":level===4?"high":level===3?"medium":"low";
+}
+function canManage(){
+ return currentRole==="Site Manager"||
+        currentRole==="Lead Admin"||
+        currentRole==="Barry's Support";
+}
+// Barry's account is the only account authorized to mark arrests.
+function canArrest(){
+ return currentUser==="Barry";
 }
 
-// SEARCH FILTERS
-document.getElementById("villainSearch")
-  .addEventListener("input",renderCriminals);
+document.querySelectorAll(".nav-button").forEach(button=>{
+ button.addEventListener("click",()=>{
+  document.querySelectorAll(".nav-button").forEach(b=>b.classList.remove("active"));
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  button.classList.add("active");
+  document.getElementById(button.dataset.page).classList.add("active");
+ });
+});
 
-document.getElementById("threatFilter")
-  .addEventListener("change",renderCriminals);
+function toast(message){
+ const element=document.getElementById("toast");
+ element.textContent=message;
+ element.style.display="block";
+ clearTimeout(window.toastTimer);
+ window.toastTimer=setTimeout(()=>element.style.display="none",2800);
+}
+function logAction(message){
+ incidentLog.unshift({message,time:new Date().toLocaleString()});
+ renderLog();
+}
 
-// START
+function renderCriminals(){
+ const search=document.getElementById("villainSearch").value.toLowerCase();
+ const threat=document.getElementById("threatFilter").value;
+ const table=document.getElementById("villainTable");
+ const filtered=criminals.filter(v=>{
+  const text=(v.name+" "+v.realName+" "+v.location+" "+v.crime+" "+v.technology).toLowerCase();
+  return text.includes(search)&&(threat==="all"||String(v.level)===threat);
+ });
+ table.innerHTML="";
+ document.getElementById("villainResultCount").textContent=
+  "Showing "+filtered.length+" of "+criminals.length+" villain files";
+ if(!filtered.length){
+  table.innerHTML='<tr><td colspan="6" class="empty">No matching villains found.</td></tr>';
+  return;
+ }
+ filtered.forEach(v=>{
+  const row=document.createElement("tr");
+  row.innerHTML=`
+   <td><strong>${escapeHTML(v.name)}</strong></td>
+   <td>${escapeHTML(v.realName)}</td>
+   <td>${escapeHTML(v.location)}</td>
+   <td><span class="tag ${threatClass(v.level)}">${v.level} · ${threatName(v.level)}</span></td>
+   <td>${escapeHTML(v.status)}</td>
+   <td><button class="secondary" onclick="details(${v.id})">View</button></td>`;
+  table.appendChild(row);
+ });
+}
+
+function details(id){
+ const v=criminals.find(item=>item.id===id);
+ if(!v)return;
+ selectedVillain=v;
+ document.getElementById("villainDetails").innerHTML=`
+  <h3>${escapeHTML(v.name)}</h3>
+  <p><strong>Real name:</strong> ${escapeHTML(v.realName)}</p>
+  <p><strong>Location:</strong> ${escapeHTML(v.location)}</p>
+  <p><strong>Threat level:</strong> ${v.level} / 5 — ${threatName(v.level)}</p>
+  <p><strong>Status:</strong> ${escapeHTML(v.status)}</p>
+  <p><strong>Reported crimes:</strong> ${escapeHTML(v.crime)}</p>
+  <p><strong>Technology / abilities:</strong> ${escapeHTML(v.technology)}</p>
+  <p>${escapeHTML(v.description)}</p>
+  <div class="action-row">
+   <button class="primary" onclick="dispatch(${v.id})" ${canManage()?"":"disabled"}>Dispatch Barry</button>
+   <button class="secondary" onclick="addAlert(${v.id})" ${canManage()?"":"disabled"}>Create Alert</button>
+   <button class="danger" onclick="arrest(${v.id})" ${canArrest()?"":"disabled"}>Mark Arrested</button>
+  </div>
+  ${!canArrest()?'<p class="small">Arrest authorization: Barry Allen only.</p>':""}
+ `;
+}
+
+function dispatch(id){
+ if(!canManage()){toast("You do not have dispatch permission.");return;}
+ const v=criminals.find(item=>item.id===id);
+ if(!v||v.status==="Arrested")return;
+ if(cases.some(c=>c.villainId===id&&c.status==="Active")){
+  toast("Barry already has an active assignment for this villain.");return;
+ }
+ const newCase={
+  id:Date.now(),villainId:id,villain:v.name,location:v.location,
+  status:"Active",assignedTo:"Barry Allen",created:new Date().toLocaleString()
+ };
+ cases.unshift(newCase);
+ mission=newCase;
+ document.getElementById("missionText").textContent="Investigate "+v.name+" near "+v.location+".";
+ document.getElementById("missionStatus").textContent="DISPATCHED TO BARRY ALLEN";
+ logAction("Barry Allen dispatched to "+v.name+".");
+ renderAll();
+ toast("Barry has been dispatched!");
+}
+
+function arrest(id){
+ if(!canArrest()){toast("Only Barry Allen can mark arrests.");return;}
+ const v=criminals.find(item=>item.id===id);
+ if(!v||v.status==="Arrested"){toast("This villain is already marked arrested.");return;}
+ v.status="Arrested";
+ arrests++;
+ cases.forEach(c=>{
+  if(c.villainId===id&&c.status==="Active")c.status="Completed";
+ });
+ if(mission&&mission.villainId===id){
+  mission.status="Completed";
+  document.getElementById("missionStatus").textContent="ASSIGNMENT COMPLETED";
+ }
+ logAction(v.name+" marked as arrested by Barry Allen.");
+ renderAll();
+ details(id);
+ toast(v.name+" marked as arrested.");
+}
+
+function addAlert(id){
+ if(!canManage()){toast("You do not have permission to create alerts.");return;}
+ const v=criminals.find(item=>item.id===id);
+ if(!v)return;
+ alerts.unshift({
+  title:v.name+" alert",
+  description:"New report entered for "+v.location+".",
+  level:v.level
+ });
+ logAction("New alert created for "+v.name+".");
+ renderAll();
+ toast("Alert created.");
+}
+
+function renderCases(){
+ const container=document.getElementById("caseList");
+ container.innerHTML="";
+ if(!cases.length){
+  container.innerHTML='<div class="empty">No cases have been opened. Dispatch Barry manually from the Villain Database.</div>';
+  return;
+ }
+ cases.forEach(c=>{
+  const card=document.createElement("div");
+  card.className="case-card";
+  card.innerHTML=`
+   <h4>${escapeHTML(c.villain)}</h4>
+   <p>Assigned to: ${escapeHTML(c.assignedTo)}</p>
+   <p>Location: ${escapeHTML(c.location)}</p>
+   <p>Created: ${escapeHTML(c.created)}</p>
+   <span class="tag ${c.status==="Active"?"active":"low"}">${escapeHTML(c.status)}</span>`;
+  container.appendChild(card);
+ });
+}
+
+function renderAlerts(){
+ const container=document.getElementById("alertList");
+ const dashboard=document.getElementById("dashboardAlerts");
+ container.innerHTML="";
+ dashboard.innerHTML="";
+ if(!alerts.length){
+  container.innerHTML='<div class="empty">No alerts.</div>';
+  dashboard.innerHTML='<div class="empty">No alerts.</div>';
+  return;
+ }
+ alerts.forEach((a,index)=>{
+  const item=document.createElement("div");
+  item.className="alert "+(a.level>=4?"high":"");
+  item.innerHTML=`
+   <strong>${escapeHTML(a.title)}</strong>
+   <p>${escapeHTML(a.description)}</p>
+   <span class="tag ${threatClass(a.level)}">${threatName(a.level)} THREAT</span>`;
+  container.appendChild(item);
+  if(index<3)dashboard.appendChild(item.cloneNode(true));
+ });
+}
+
+function renderLog(){
+ const container=document.getElementById("logList");
+ container.innerHTML="";
+ if(!incidentLog.length){
+  container.innerHTML='<div class="empty">No actions recorded yet.</div>';return;
+ }
+ incidentLog.forEach(entry=>{
+  const item=document.createElement("div");
+  item.className="case-card";
+  item.innerHTML=`<strong>${escapeHTML(entry.message)}</strong><p>${escapeHTML(entry.time)}</p>`;
+  container.appendChild(item);
+ });
+}
+function exportLog(){
+ const textContent=incidentLog.map(item=>item.time+" — "+item.message).join("\n");
+ const blob=new Blob([textContent||"No incident log entries."],{type:"text/plain"});
+ const url=URL.createObjectURL(blob);
+ const link=document.createElement("a");
+ link.href=url;link.download="Central-City-Incident-Log.txt";
+ link.click();URL.revokeObjectURL(url);
+}
+
+function sendMessage(){
+ const input=document.getElementById("teamMessage");
+ const message=input.value.trim();
+ if(!message)return;
+ messages.unshift({sender:currentUser,message,time:new Date().toLocaleTimeString()});
+ input.value="";
+ renderMessages();
+ logAction(currentUser+" sent a team message.");
+}
+function renderMessages(){
+ const container=document.getElementById("teamMessages");
+ container.innerHTML="";
+ messages.forEach(item=>{
+  const card=document.createElement("div");
+  card.className="case-card";
+  card.innerHTML=`
+   <strong>${escapeHTML(item.sender)}</strong>
+   <p>${escapeHTML(item.message)}</p>
+   <span class="small">${escapeHTML(item.time)}</span>`;
+  container.appendChild(card);
+ });
+}
+
+function updateStats(){
+ document.getElementById("villainCount").textContent=criminals.length;
+ document.getElementById("caseCount").textContent=cases.filter(c=>c.status==="Active").length;
+ document.getElementById("arrestCount").textContent=arrests;
+ document.getElementById("alertCount").textContent=alerts.length;
+}
+function renderAll(){
+ renderCriminals();renderCases();renderAlerts();renderLog();renderMessages();updateStats();
+}
+function logout(){
+ sessionStorage.removeItem("starUser");
+ sessionStorage.removeItem("starRole");
+ sessionStorage.removeItem("loginApproved");
+ window.location.replace("login.html");
+}
+document.getElementById("villainSearch").addEventListener("input",renderCriminals);
+document.getElementById("threatFilter").addEventListener("change",renderCriminals);
 renderAll();
 </script>
 </body>
