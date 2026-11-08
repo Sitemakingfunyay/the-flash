@@ -1,1 +1,499 @@
------placeholder-------
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Central City Crime Watch</title>
+<style>
+:root {
+  --bg:#080e19;
+  --panel:#111c2d;
+  --panel2:#17243a;
+  --border:#263750;
+  --text:#edf4ff;
+  --muted:#91a4c0;
+  --red:#ff4357;
+  --blue:#36a9ff;
+  --green:#36d69b;
+  --yellow:#ffc857;
+}
+* {box-sizing:border-box}
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,Arial,sans-serif;
+}
+header {
+  background:#0d1727;
+  border-bottom:1px solid var(--border);
+  padding:17px 5%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+}
+.brand {display:flex;align-items:center;gap:13px}
+.logo {
+  width:44px;height:44px;border-radius:13px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,#ff354f,#a71937);
+  font-size:24px;
+  box-shadow:0 0 25px #ff354744;
+}
+.brand h1 {font-size:17px;margin:0;letter-spacing:1.5px}
+.brand p {margin:3px 0 0;color:var(--muted);font-size:11px}
+.header-right {display:flex;gap:10px;align-items:center}
+.status {
+  color:var(--green);
+  font-size:11px;
+  border:1px solid #36d69b55;
+  background:#36d69b12;
+  padding:8px 12px;border-radius:30px;
+}
+main {max-width:1450px;margin:auto;padding:28px 5% 60px}
+.welcome {
+  display:flex;justify-content:space-between;align-items:center;
+  gap:20px;flex-wrap:wrap;margin-bottom:25px;
+}
+.eyebrow {color:var(--blue);font-size:11px;font-weight:800;letter-spacing:2px}
+h2 {font-size:30px;margin:7px 0}
+.subtitle {color:var(--muted);font-size:13px}
+button,select,input {font:inherit}
+button {
+  border:0;cursor:pointer;border-radius:9px;
+  padding:11px 15px;font-weight:750;
+  transition:.2s;
+}
+button:hover {filter:brightness(1.15);transform:translateY(-1px)}
+.primary {background:var(--red);color:white}
+.secondary {background:var(--panel2);color:white;border:1px solid var(--border)}
+.stats {
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:14px;margin-bottom:22px;
+}
+.stat {
+  background:var(--panel);border:1px solid var(--border);
+  border-radius:13px;padding:18px;
+}
+.stat-label {font-size:11px;color:var(--muted);letter-spacing:1px}
+.stat-value {font-size:30px;font-weight:850;margin-top:8px}
+.stat-note {font-size:11px;color:var(--muted);margin-top:5px}
+.layout {
+  display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.8fr);
+  gap:18px;align-items:start;
+}
+.panel {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:14px;padding:19px;margin-bottom:18px;
+}
+.panel-heading {
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;margin-bottom:16px;
+}
+.panel-heading h3 {margin:0;font-size:15px}
+.small {font-size:11px;color:var(--muted)}
+.toolbar {display:flex;gap:9px;flex-wrap:wrap;margin-bottom:14px}
+input,select {
+  color:var(--text);background:#0a1423;
+  border:1px solid var(--border);border-radius:8px;
+  padding:11px;outline:none;min-width:0;
+}
+input:focus,select:focus {border-color:var(--blue)}
+.search {flex:1;min-width:160px}
+.criminal-list {display:grid;gap:10px}
+.criminal {
+  display:grid;grid-template-columns:48px 1fr auto;
+  align-items:center;gap:13px;
+  padding:13px;background:#0d1829;
+  border:1px solid var(--border);border-radius:11px;
+}
+.avatar {
+  height:45px;width:45px;border-radius:12px;
+  background:#253650;display:grid;place-items:center;font-size:23px;
+}
+.criminal h4 {margin:0 0 5px;font-size:14px}
+.criminal p {margin:0;color:var(--muted);font-size:11px;line-height:1.6}
+.tag {
+  display:inline-block;padding:5px 8px;border-radius:6px;
+  font-size:10px;font-weight:800;
+}
+.high {background:#ff435722;color:#ff8290}
+.medium {background:#ffc85722;color:var(--yellow)}
+.low {background:#36d69b22;color:var(--green)}
+.arrested {background:#36a9ff22;color:#72c5ff}
+.criminal-actions {display:flex;flex-direction:column;gap:7px;align-items:end}
+.criminal-actions button {padding:8px 10px;font-size:10px}
+.map {
+  height:260px;position:relative;overflow:hidden;
+  border-radius:11px;background:#101e2e;
+  border:1px solid var(--border);
+  background-image:
+    linear-gradient(90deg,transparent 47%,#33445b 48%,#33445b 51%,transparent 52%),
+    linear-gradient(0deg,transparent 47%,#33445b 48%,#33445b 51%,transparent 52%),
+    linear-gradient(35deg,transparent 47%,#293b50 48%,#293b50 50%,transparent 51%);
+  background-size:95px 95px,95px 95px,180px 180px;
+}
+.map-label {
+  position:absolute;color:#8ea7c5;font-size:10px;
+  background:#0b1728cc;padding:5px 7px;border-radius:5px;
+}
+.pin {
+  position:absolute;width:13px;height:13px;border-radius:50%;
+  background:var(--red);border:3px solid white;
+  box-shadow:0 0 15px var(--red);
+}
+.pin.blue {background:var(--blue);box-shadow:0 0 15px var(--blue)}
+.map-legend {display:flex;gap:15px;margin-top:12px;color:var(--muted);font-size:10px}
+.dot {display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.alert {
+  padding:12px;border-radius:9px;background:#0d1829;
+  border:1px solid var(--border);margin-bottom:9px;
+}
+.alert strong {font-size:12px}
+.alert p {font-size:11px;color:var(--muted);margin:5px 0 0}
+.alert time {font-size:10px;color:var(--yellow)}
+.case {
+  display:flex;justify-content:space-between;gap:10px;
+  padding:12px 0;border-bottom:1px solid var(--border);
+}
+.case:last-child {border:0}
+.case strong {font-size:12px}
+.case p {font-size:10px;color:var(--muted);margin:4px 0 0}
+.mission {
+  background:linear-gradient(120deg,#142b47,#18213a);
+  border:1px solid #28618c;border-radius:12px;padding:17px;
+}
+.mission h3 {margin:0 0 8px}
+.mission p {font-size:12px;color:#b5c8e2;line-height:1.6}
+.mission button {margin-top:8px}
+.empty {padding:25px;text-align:center;color:var(--muted);font-size:12px}
+footer {
+  text-align:center;color:#657993;font-size:10px;
+  padding:25px;border-top:1px solid var(--border);
+}
+.toast {
+  position:fixed;bottom:22px;right:22px;
+  background:#1c3550;border:1px solid #3976a8;
+  padding:13px 18px;border-radius:10px;
+  box-shadow:0 10px 40px #0008;
+  opacity:0;transform:translateY(10px);
+  pointer-events:none;transition:.25s;font-size:12px;
+}
+.toast.show {opacity:1;transform:translateY(0)}
+@media(max-width:850px) {
+  .layout {grid-template-columns:1fr}
+  .stats {grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:480px) {
+  main {padding:20px 4%}
+  h2 {font-size:24px}
+  .criminal {grid-template-columns:40px 1fr}
+  .criminal-actions {grid-column:2;flex-direction:row;align-items:center}
+  .avatar {width:38px;height:38px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand">
+    <div class="logo">⚡</div>
+    <div>
+      <h1>CENTRAL CITY CRIME WATCH</h1>
+      <p>S.T.A.R. LABS • SPEED FORCE OPERATIONS</p>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="status">● SYSTEM ONLINE</span>
+  </div>
+</header>
+
+<main>
+  <section class="welcome">
+    <div>
+      <div class="eyebrow">S.T.A.R. LABS COMMAND CENTER</div>
+      <h2>Welcome back, Barry.</h2>
+      <div class="subtitle">Your Central City operations briefing is ready.</div>
+    </div>
+    <button class="primary" onclick="showBriefing()">⚡ Start briefing</button>
+  </section>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-label">ACTIVE SUSPECTS</div>
+      <div class="stat-value" id="activeCount">4</div>
+      <div class="stat-note">Currently wanted in the database</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">OPEN CASES</div>
+      <div class="stat-value" id="caseCount">3</div>
+      <div class="stat-note">Cases needing attention</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">ARRESTS</div>
+      <div class="stat-value" id="arrestCount">0</div>
+      <div class="stat-note">Recorded by this dashboard</div>
+    </div>
+    <div class="stat">
+      <div class="stat-label">CITY STATUS</div>
+      <div class="stat-value" style="font-size:22px;color:var(--green)">STABLE</div>
+      <div class="stat-note">Fictional game simulation</div>
+    </div>
+  </section>
+
+  <div class="layout">
+    <div>
+      <section class="panel">
+        <div class="panel-heading">
+          <h3>Criminal Database</h3>
+          <span class="small">FICTIONAL GAME RECORDS</span>
+        </div>
+        <div class="toolbar">
+          <input id="search" class="search" placeholder="Search criminals..." oninput="renderCriminals()">
+          <select id="filter" onchange="renderCriminals()">
+            <option value="all">All suspects</option>
+            <option value="High">High threat</option>
+            <option value="Medium">Medium threat</option>
+            <option value="Low">Low threat</option>
+            <option value="Arrested">Arrested</option>
+          </select>
+        </div>
+        <div class="criminal-list" id="criminalList"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h3>Central City Incident Map</h3>
+          <span class="small">SIMULATED LOCATIONS</span>
+        </div>
+        <div class="map">
+          <span class="map-label" style="top:12%;left:8%">DOWNTOWN</span>
+          <span class="map-label" style="top:42%;right:7%">INDUSTRIAL DISTRICT</span>
+          <span class="map-label" style="bottom:12%;left:10%">CENTRAL PARK</span>
+          <span class="map-label" style="bottom:12%;right:10%">S.T.A.R. LABS</span>
+          <span class="pin" style="top:25%;left:32%"></span>
+          <span class="pin" style="top:53%;left:70%"></span>
+          <span class="pin" style="top:73%;left:30%"></span>
+          <span class="pin blue" style="top:75%;left:80%"></span>
+        </div>
+        <div class="map-legend">
+          <span><i class="dot" style="background:var(--red)"></i>Incident</span>
+          <span><i class="dot" style="background:var(--blue)"></i>S.T.A.R. Labs</span>
+        </div>
+        <p class="small">Map markers are illustrative and do not represent live tracking.</p>
+      </section>
+    </div>
+
+    <aside>
+      <section class="panel">
+        <div class="panel-heading">
+          <h3>Latest Crime Alerts</h3>
+          <span class="tag high">SIMULATED</span>
+        </div>
+        <div id="alerts"></div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <h3>Open Case Files</h3>
+          <span class="small">CASE BOARD</span>
+        </div>
+        <div id="cases"></div>
+      </section>
+
+      <section class="panel mission">
+        <div class="eyebrow">FLASH OPERATIONS</div>
+        <h3>Barry's Next Mission</h3>
+        <p id="missionText">Investigate a suspicious energy reading near the industrial district. Check the area and report back to S.T.A.R. Labs.</p>
+        <button class="primary" onclick="completeMission()">Complete mission ✓</button>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading"><h3>Team Communications</h3></div>
+        <div class="case">
+          <div><strong>Dr. Caitlin Snow</strong><p>Medical and scientific support</p></div>
+          <span class="tag low">ONLINE</span>
+        </div>
+        <div class="case">
+          <div><strong>Cisco Ramon</strong><p>Technology and communications</p></div>
+          <span class="tag low">ONLINE</span>
+        </div>
+        <div class="case">
+          <div><strong>Barry Allen</strong><p>Central City field operations</p></div>
+          <span class="tag low">ON DUTY</span>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer>
+  CENTRAL CITY CRIME WATCH • S.T.A.R. LABS
+  <br><br>
+  Fictional superhero game dashboard. Not a real emergency or crime reporting service.
+</footer>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const criminals = [
+  {id:1,name:"The Robber",alias:"Unknown suspect",threat:"Low",
+   location:"Downtown Central City",crime:"Robbery",
+   ability:"No known abilities",status:"Wanted",icon:"🕵️"},
+  {id:2,name:"Captain Cold",alias:"Leonard Snart",threat:"High",
+   location:"Industrial District",crime:"Theft and freezing attacks",
+   ability:"Cold technology",status:"Wanted",icon:"❄️"},
+  {id:3,name:"Weather Wizard",alias:"Mark Mardon",threat:"High",
+   location:"Central City Airport",crime:"Weather manipulation",
+   ability:"Weather control",status:"Wanted",icon:"🌩️"},
+  {id:4,name:"Mirror Master",alias:"Sam Scudder",threat:"Medium",
+   location:"Downtown Central City",crime:"Break-ins",
+   ability:"Mirror dimension technology",status:"Wanted",icon:"🪞"}
+];
+
+let alerts = [
+  {title:"Robbery reported",detail:"Downtown Central City • The Robber",time:"JUST NOW"},
+  {title:"Unusual cold readings",detail:"Industrial District • Captain Cold",time:"RECENT"},
+  {title:"Weather anomaly",detail:"Airport • Weather Wizard",time:"RECENT"}
+];
+
+let cases = [
+  {id:"CC-001",title:"Downtown robbery",detail:"Suspect: The Robber",status:"OPEN"},
+  {id:"CC-002",title:"Cold technology incident",detail:"Suspect: Captain Cold",status:"OPEN"},
+  {id:"CC-003",title:"Unusual weather readings",detail:"Suspect: Weather Wizard",status:"OPEN"}
+];
+
+let arrests = 0;
+let completed = false;
+
+function toast(message) {
+  const box = document.getElementById("toast");
+  box.textContent = message;
+  box.classList.add("show");
+  setTimeout(() => box.classList.remove("show"),2500);
+}
+
+function renderCriminals() {
+  const query = document.getElementById("search").value.toLowerCase();
+  const filter = document.getElementById("filter").value;
+
+  const results = criminals.filter(c =>
+    (c.name.toLowerCase().includes(query) ||
+     c.alias.toLowerCase().includes(query) ||
+     c.location.toLowerCase().includes(query)) &&
+    (filter === "all" || c.threat === filter || c.status === filter)
+  );
+
+  document.getElementById("criminalList").innerHTML = results.length
+    ? results.map(c => `
+      <div class="criminal">
+        <div class="avatar">${c.icon}</div>
+        <div>
+          <h4>${c.name}</h4>
+          <p>${c.alias} • ${c.location}<br>
+          ${c.crime} • ${c.ability}</p>
+          <span class="tag ${c.status === "Arrested" ? "arrested" : c.threat.toLowerCase()}">${c.status === "Arrested" ? "ARRESTED" : c.threat.toUpperCase()+" THREAT"}</span>
+        </div>
+        <div class="criminal-actions">
+          <button class="secondary" onclick="details(${c.id})">Details</button>
+          ${c.status !== "Arrested" ? `<button class="primary" onclick="arrest(${c.id})">Arrest</button>` : ""}
+        </div>
+      </div>
+    `).join("")
+    : `<div class="empty">No matching suspects found.</div>`;
+
+  updateStats();
+}
+
+function details(id) {
+  const c = criminals.find(x => x.id === id);
+  alert(
+    "SUSPECT FILE: " + c.name +
+    "\nAlias: " + c.alias +
+    "\nThreat: " + c.threat +
+    "\nLocation: " + c.location +
+    "\nReported crime: " + c.crime +
+    "\nAbilities: " + c.ability +
+    "\nStatus: " + c.status
+  );
+}
+
+function arrest(id) {
+  const c = criminals.find(x => x.id === id);
+  if (c.status === "Arrested") return;
+
+  c.status = "Arrested";
+  arrests++;
+  alerts.unshift({
+    title:"Suspect marked arrested",
+    detail:c.name+" • Arrest recorded in game dashboard",
+    time:"JUST NOW"
+  });
+
+  renderAll();
+  toast(c.name+" marked as arrested!");
+}
+
+function renderAlerts() {
+  document.getElementById("alerts").innerHTML = alerts.slice(0,5).map(a => `
+    <div class="alert">
+      <time>${a.time}</time><br>
+      <strong>${a.title}</strong>
+      <p>${a.detail}</p>
+    </div>
+  `).join("");
+}
+
+function renderCases() {
+  document.getElementById("cases").innerHTML = cases.map(c => `
+    <div class="case">
+      <div><strong>${c.id} • ${c.title}</strong><p>${c.detail}</p></div>
+      <span class="tag ${c.status === "CLOSED" ? "low" : "medium"}">${c.status}</span>
+    </div>
+  `).join("");
+}
+
+function updateStats() {
+  document.getElementById("activeCount").textContent =
+    criminals.filter(c => c.status !== "Arrested").length;
+  document.getElementById("arrestCount").textContent = arrests;
+  document.getElementById("caseCount").textContent =
+    cases.filter(c => c.status === "OPEN").length;
+}
+
+function renderAll() {
+  renderCriminals();
+  renderAlerts();
+  renderCases();
+}
+
+function showBriefing() {
+  alert(
+    "CENTRAL CITY BRIEFING\n\n" +
+    "Barry, there are " +
+    criminals.filter(c => c.status !== "Arrested").length +
+    " active suspects in the database.\n\n" +
+    "Check the suspect files, review the incident map, and coordinate with Caitlin and Cisco."
+  );
+}
+
+function completeMission() {
+  if (completed) {
+    toast("Mission already completed!");
+    return;
+  }
+
+  completed = true;
+  document.getElementById("missionText").textContent =
+    "Mission completed! Great work, Barry. Return to S.T.A.R. Labs for your next briefing.";
+  toast("Mission completed!");
+}
+
+renderAll();
+</script>
+</body>
+</html>
